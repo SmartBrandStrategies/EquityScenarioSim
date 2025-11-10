@@ -2,6 +2,22 @@
 
 A sophisticated cap table simulator designed to model partnership negotiations and understand the financial impact of bringing on new partners. Adjust deal structures, vesting schedules, and performance milestones to see real-time effects on ownership percentages and exit payouts.
 
+**Version**: 0.2.0 | **License**: MIT | **Status**: Production Ready ✅
+
+---
+
+### Documentation
+
+- 🚀 **[Getting Started](#getting-started)** - Quick start guide (below)
+- 🆘 **[Troubleshooting](#troubleshooting)** - Common issues & solutions
+- 📖 **[CONTRIBUTING.md](./CONTRIBUTING.md)** - How to contribute
+- ⚖️ **[LICENSE](./LICENSE)** - MIT License details
+- 🔧 **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** - Detailed OS-specific setup
+- 🐛 **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Detailed troubleshooting
+- 📋 **[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)** - Community guidelines
+
+---
+
 ## Features
 
 ### Core Modeling
@@ -92,11 +108,29 @@ For detailed setup instructions for your operating system, see [SETUP_GUIDE.md](
 
 ## Troubleshooting
 
-Having issues with setup? Check [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for:
-- npm/Windows dependency issues
-- Port already in use errors
-- Node.js installation help
-- And much more!
+### Common Setup Issues
+
+**Windows npm error about `@rollup/rollup-win32-x64-msvc`?**
+```bash
+# Use Yarn instead (recommended for Windows)
+npm install -g yarn
+yarn install
+yarn dev
+```
+
+**Port 5173 already in use?**
+```bash
+# Use a different port
+yarn dev --port 3000  # or: npm run dev -- --port 3000
+```
+
+**Node.js or npm not found?**
+1. Download Node.js from [nodejs.org](https://nodejs.org) (LTS version)
+2. Install it
+3. Restart your terminal
+4. Verify: `node --version` and `npm --version`
+
+**For more help**, see [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) or open a [GitHub Issue](https://github.com/SmartBrandStrategies/EquityScenarioSim/issues)
 
 ## Development
 
