@@ -8,6 +8,11 @@ import ExitCalculator from './components/ExitCalculator';
 import Warnings from './components/Warnings';
 import ComparisonPanel from './components/ComparisonPanel';
 import FounderSetup from './components/FounderSetup';
+import ScenarioSummary from './components/ScenarioSummary';
+import PoolTargetInput from './components/PoolTargetInput';
+import ExitWaterfall from './components/ExitWaterfall';
+import MilestoneTimeline from './components/MilestoneTimeline';
+import ScenarioManager, { ScenarioData } from './components/ScenarioManager';
 import { Path, Milestones, CapTableEntry, InvestmentVehicle, Founder } from './types';
 
 const initialFounders: Founder[] = [
@@ -28,7 +33,8 @@ function App() {
   const [preMoneyValuation, setPreMoneyValuation] = useState<number>(300000);
   const [valuationCap, setValuationCap] = useState<number>(550000);
   const [founders, setFounders] = useState<Founder[]>(initialFounders);
-  
+  const [exitValuation, setExitValuation] = useState<number>(5000000);
+
   // Constants
   const STRATEGIC_CAP = 12; // Partner's equity should not exceed 12%
   const POOL_MINIMUM = 8; // Unallocated pool should be at least 8%
@@ -101,6 +107,7 @@ function App() {
     const partnerTotalPotentialEquity = investmentEquity + totalGrantEquity;
     
     const foundersForExitCalc = dilutedFounders.map(f => ({ name: f.name, dilutedEquity: f.dilutedEquity }));
+    const totalFounderEquity = totalDilutedFounderEquity;
 
     return {
       capTableData,
@@ -108,14 +115,29 @@ function App() {
       partnerTotalEquity,
       unallocatedPool,
       partnerTotalPotentialEquity,
+      investmentEquity,
+      vestedGrantEquity,
+      totalFounderEquity,
     };
   }, [selectedPath, monthsElapsed, milestones, investment, preMoneyValuation, investmentVehicle, valuationCap, founders]);
 
-  const { capTableData, foundersForExitCalc, partnerTotalEquity, unallocatedPool, partnerTotalPotentialEquity } = calculations;
+  const { capTableData, foundersForExitCalc, partnerTotalEquity, unallocatedPool, partnerTotalPotentialEquity, investmentEquity, vestedGrantEquity, totalFounderEquity } = calculations;
 
   // Strategic Guardrail Checks
   const isPartnerOverCap = partnerTotalPotentialEquity > STRATEGIC_CAP;
   const isPoolTooSmall = unallocatedPool < POOL_MINIMUM;
+
+  // Build current scenario for saving
+  const currentScenarioData: ScenarioData = {
+    selectedPath,
+    investment,
+    investmentVehicle,
+    preMoneyValuation,
+    valuationCap,
+    monthsElapsed,
+    milestones,
+    founders,
+  };
 
   return (
     <div className="bg-gray-900 text-white min-h-screen font-sans p-4 sm:p-6 lg:p-8">
@@ -129,25 +151,25 @@ function App() {
           <PathSelector selectedPath={selectedPath} setSelectedPath={setSelectedPath} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Controls */}
-          <div className="lg:col-span-1 space-y-8">
-            <VestingClock 
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8">
+          {/* Column 1: Inputs & Configuration */}
+          <div className="space-y-8">
+            <VestingClock
               monthsElapsed={monthsElapsed}
               setMonthsElapsed={setMonthsElapsed}
               selectedPath={selectedPath}
             />
-            <MilestoneControls 
+            <MilestoneControls
               milestones={milestones}
               setMilestones={setMilestones}
               isDisabled={selectedPath === 'A'}
             />
+            <FounderSetup founders={founders} setFounders={setFounders} />
           </div>
 
-          {/* Middle Column: Core Deal & Cap Table */}
-          <div className="lg:col-span-1 space-y-8">
-            <FounderSetup founders={founders} setFounders={setFounders} />
-            <PartnerCapitalInfusion 
+          {/* Column 2: Deal Configuration & Cap Table */}
+          <div className="space-y-8">
+            <PartnerCapitalInfusion
               investment={investment}
               setInvestment={setInvestment}
               preMoneyValuation={preMoneyValuation}
@@ -158,27 +180,66 @@ function App() {
               setValuationCap={setValuationCap}
             />
             <CapTableView data={capTableData} title="Live Cap Table" />
+            <PoolTargetInput
+              currentPool={unallocatedPool}
+              founders={founders}
+              partnerEquity={partnerTotalEquity}
+            />
           </div>
 
-          {/* Right Column: Outcomes & Warnings */}
-          <div className="lg:col-span-1 space-y-8">
+          {/* Column 3: Outcomes & Analysis */}
+          <div className="space-y-8">
             <ComparisonPanel
-                selectedPath={selectedPath}
-                partnerTotalPotentialEquity={partnerTotalPotentialEquity}
+              selectedPath={selectedPath}
+              partnerTotalPotentialEquity={partnerTotalPotentialEquity}
+            />
+            <ScenarioSummary
+              selectedPath={selectedPath}
+              investmentEquity={investmentEquity}
+              vestedGrantEquity={vestedGrantEquity}
+              partnerTotalPotentialEquity={partnerTotalPotentialEquity}
+              unallocatedPool={unallocatedPool}
+              totalFounderEquity={totalFounderEquity}
+            />
+            <MilestoneTimeline
+              selectedPath={selectedPath}
+              monthsElapsed={monthsElapsed}
+              milestones={milestones}
+              vestingSchedule={{
+                cliff: selectedPath === 'A' ? 3 : 12,
+                period: selectedPath === 'A' ? 24 : 48,
+                grant: 5.0,
+                baseGrant: 5.0,
+                performanceGrant: milestones.capitalRaised || milestones.mrrTarget ? 5.0 : 0,
+              }}
+            />
+          </div>
+
+          {/* Column 4: Exit Analysis & Management */}
+          <div className="space-y-8">
+            <ExitWaterfall
+              exitValuation={exitValuation}
+              setExitValuation={setExitValuation}
+              partnerEquity={partnerTotalEquity}
+              foundersEquity={totalFounderEquity}
+              poolEquity={unallocatedPool}
             />
             <ExitCalculator
               selectedPath={selectedPath}
               partnerVestedEquity={partnerTotalEquity}
               founders={foundersForExitCalc}
             />
-             <Warnings
-                isPartnerOverCap={isPartnerOverCap}
-                isPoolTooSmall={isPoolTooSmall}
-                partnerTotalPotentialEquity={partnerTotalPotentialEquity}
-                unallocatedPool={unallocatedPool}
-                selectedPath={selectedPath}
-                milestones={milestones}
-                monthsElapsed={monthsElapsed}
+            <ScenarioManager
+              currentScenario={currentScenarioData}
+            />
+            <Warnings
+              isPartnerOverCap={isPartnerOverCap}
+              isPoolTooSmall={isPoolTooSmall}
+              partnerTotalPotentialEquity={partnerTotalPotentialEquity}
+              unallocatedPool={unallocatedPool}
+              selectedPath={selectedPath}
+              milestones={milestones}
+              monthsElapsed={monthsElapsed}
             />
           </div>
         </div>

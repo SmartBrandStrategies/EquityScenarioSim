@@ -35,6 +35,12 @@ const FounderSetup: React.FC<FounderSetupProps> = ({ founders, setFounders }) =>
   };
 
   const totalEquity = founders.reduce((acc, f) => acc + f.equity, 0);
+  const maxFounder = Math.max(...founders.map(f => f.equity));
+  const minFounder = Math.min(...founders.map(f => f.equity));
+  const disparity = maxFounder - minFounder;
+  const founderConcentrationRisk = maxFounder > 70;
+  const founderTotalHigh = totalEquity > 92; // leaves little room for pool/partners
+  const founderDisparityHigh = founders.length > 1 && disparity > 30;
 
   return (
     <div className="bg-gray-800 p-6 rounded-xl shadow-lg">
@@ -93,6 +99,25 @@ const FounderSetup: React.FC<FounderSetupProps> = ({ founders, setFounders }) =>
             <span className={`font-mono text-lg ${totalEquity > 100 ? 'text-red-400' : 'text-white'}`}>{totalEquity.toFixed(2)}%</span>
             {totalEquity > 100 && <p className="text-xs text-red-400 mt-1">Warning: Total exceeds 100%. This will result in a negative unallocated pool.</p>}
       </div>
+      {(founderTotalHigh || founderConcentrationRisk || founderDisparityHigh) && (
+        <div className="mt-3 space-y-2">
+          {founderTotalHigh && (
+            <div className="p-3 rounded-md bg-yellow-500/20 text-yellow-300 text-sm">
+              Risk: Founders hold {totalEquity.toFixed(1)}%. Consider reducing to leave 10–15% for an option pool and future partners.
+            </div>
+          )}
+          {founderConcentrationRisk && (
+            <div className="p-3 rounded-md bg-yellow-500/20 text-yellow-300 text-sm">
+              Risk: One founder at {maxFounder.toFixed(1)}% may create concentration issues. Document roles/vesting to align incentives.
+            </div>
+          )}
+          {founderDisparityHigh && (
+            <div className="p-3 rounded-md bg-yellow-500/20 text-yellow-300 text-sm">
+              Risk: Founder disparity of {disparity.toFixed(1)} pp. Ensure contribution and vesting reflect the gap.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

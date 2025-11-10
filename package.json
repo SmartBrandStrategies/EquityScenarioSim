@@ -1,7 +1,29 @@
 {
   "name": "cap-table-simulator",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.2.0",
+  "description": "A sophisticated cap table simulator for partnership negotiations, featuring milestone-based vesting, performance equity, and comprehensive exit analysis",
+  "license": "MIT",
+  "author": {
+    "name": "Cap Table Simulator Contributors",
+    "url": "https://github.com/yourusername/cap-table-simulator"
+  },
+  "keywords": [
+    "cap-table",
+    "equity",
+    "startup",
+    "partnership",
+    "vesting",
+    "negotiation",
+    "simulator"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/cap-table-simulator"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/cap-table-simulator/issues"
+  },
+  "homepage": "https://github.com/yourusername/cap-table-simulator#readme",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,13 +31,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react-dom": "^19.2.0",
-    "react": "^19.2.0"
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }

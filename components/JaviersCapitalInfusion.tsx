@@ -69,6 +69,16 @@ const PartnerCapitalInfusion: React.FC<PartnerCapitalInfusionProps> = ({
         }
     }, [investment, preMoneyValuation, investmentVehicle, valuationCap]);
 
+    const parseCurrencyInput = (val: string): number | null => {
+        const cleaned = val.toUpperCase().replace(/[^0-9.KM]/g, '');
+        if (!cleaned) return null;
+        let num = parseFloat(cleaned.replace(/[^0-9.]/g, ''));
+        if (isNaN(num)) return null;
+        if (cleaned.includes('M')) num *= 1_000_000;
+        if (cleaned.includes('K')) num *= 1_000;
+        return Math.max(0, Math.round(num));
+    };
+
     return (
         <div className="bg-gray-800 p-6 rounded-xl shadow-lg">
             <h2 className="text-2xl font-bold mb-4 text-center">Partner's Cash Investment</h2>
@@ -86,7 +96,18 @@ const PartnerCapitalInfusion: React.FC<PartnerCapitalInfusionProps> = ({
                         </label>
                         <span className="px-3 py-1 text-lg font-bold text-indigo-300 bg-indigo-500/20 rounded-md">{formatCurrency(investment)}</span>
                     </div>
-                    <input type="range" min="0" max="100000" step="5000" value={investment} onChange={e => setInvestment(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
+                    <div className="flex gap-3 items-center">
+                      <input type="range" min="0" max="100000" step="5000" value={investment} onChange={e => setInvestment(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
+                      <input
+                        aria-label="Investment amount"
+                        className="w-36 bg-gray-900 border-2 border-gray-700 rounded-md py-2 px-3 text-right focus:border-indigo-500 outline-none"
+                        value={formatCurrency(investment, false)}
+                        onChange={(e) => {
+                          const parsed = parseCurrencyInput(e.target.value);
+                          if (parsed !== null) setInvestment(Math.min(1_000_000, parsed));
+                        }}
+                      />
+                    </div>
                 </div>
 
                 {investmentVehicle === 'priced' ? (
@@ -98,7 +119,18 @@ const PartnerCapitalInfusion: React.FC<PartnerCapitalInfusionProps> = ({
                             </label>
                             <span className="px-3 py-1 text-lg font-bold text-indigo-300 bg-indigo-500/20 rounded-md">{formatCurrency(preMoneyValuation)}</span>
                         </div>
-                        <input type="range" min="100000" max="1000000" step="50000" value={preMoneyValuation} onChange={e => setPreMoneyValuation(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
+                        <div className="flex gap-3 items-center">
+                          <input type="range" min="100000" max="1000000" step="50000" value={preMoneyValuation} onChange={e => setPreMoneyValuation(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
+                          <input
+                            aria-label="Pre-money valuation"
+                            className="w-36 bg-gray-900 border-2 border-gray-700 rounded-md py-2 px-3 text-right focus:border-indigo-500 outline-none"
+                            value={formatCurrency(preMoneyValuation, false)}
+                            onChange={(e) => {
+                              const parsed = parseCurrencyInput(e.target.value);
+                              if (parsed !== null) setPreMoneyValuation(Math.min(5_000_000, Math.max(50_000, parsed)));
+                            }}
+                          />
+                        </div>
                     </div>
                 ) : (
                     <div>
@@ -109,7 +141,18 @@ const PartnerCapitalInfusion: React.FC<PartnerCapitalInfusionProps> = ({
                             </label>
                             <span className="px-3 py-1 text-lg font-bold text-indigo-300 bg-indigo-500/20 rounded-md">{formatCurrency(valuationCap)}</span>
                         </div>
-                        <input type="range" min="250000" max="1500000" step="50000" value={valuationCap} onChange={e => setValuationCap(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
+                        <div className="flex gap-3 items-center">
+                          <input type="range" min="250000" max="1500000" step="50000" value={valuationCap} onChange={e => setValuationCap(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
+                          <input
+                            aria-label="SAFE valuation cap"
+                            className="w-36 bg-gray-900 border-2 border-gray-700 rounded-md py-2 px-3 text-right focus:border-indigo-500 outline-none"
+                            value={formatCurrency(valuationCap, false)}
+                            onChange={(e) => {
+                              const parsed = parseCurrencyInput(e.target.value);
+                              if (parsed !== null) setValuationCap(Math.min(10_000_000, Math.max(100_000, parsed)));
+                            }}
+                          />
+                        </div>
                     </div>
                 )}
             </div>
@@ -121,6 +164,11 @@ const PartnerCapitalInfusion: React.FC<PartnerCapitalInfusionProps> = ({
                         <Tooltip text={investmentVehicle === 'priced' ? "The percentage of the company purchased with this cash investment." : "The potential percentage of the company this investment will convert into, based on the valuation cap."} />
                     </div>
                     <p className="text-3xl font-bold text-purchased mt-1">{equityFromInvestment.toFixed(2)}%</p>
+                    {equityFromInvestment > 15 && (
+                      <div className="mt-3 text-xs bg-yellow-500/20 text-yellow-300 p-2 rounded-md">
+                        Risk: Purchased equity is high for an early partnership. Consider a higher valuation, a smaller check, or staging the investment.
+                      </div>
+                    )}
                 </div>
                 <div className="bg-gray-900 p-4 rounded-lg">
                     <div className="text-sm font-bold text-gray-400 tracking-widest flex items-center justify-center space-x-1.5">
