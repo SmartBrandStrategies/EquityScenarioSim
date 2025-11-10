@@ -34,35 +34,77 @@ A sophisticated cap table simulator designed to model partnership negotiations a
 
 ## Getting Started
 
+### Quick Start
+
+The easiest way to get started:
+
+```bash
+git clone https://github.com/SmartBrandStrategies/EquityScenarioSim.git
+cd EquityScenarioSim
+npm install -g yarn  # Recommended for Windows users
+yarn install         # or: npm install
+yarn dev            # or: npm run dev
+```
+
+Then open http://localhost:5173/ in your browser
+
 ### Prerequisites
 
-- Node.js (v18+)
+- **Node.js**: v18 or higher ([install here](https://nodejs.org))
+- **npm**: v9 or higher (comes with Node.js)
+- **Recommended**: Yarn for Windows users
+
+### Detailed Setup
+
+For detailed setup instructions for your operating system, see [SETUP_GUIDE.md](./SETUP_GUIDE.md)
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository**:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/SmartBrandStrategies/EquityScenarioSim.git
    cd EquityScenarioSim
    ```
 
-2. Install dependencies:
+2. **Install dependencies**:
    ```bash
+   # Option A: Using Yarn (Recommended for Windows)
+   npm install -g yarn
+   yarn install
+
+   # Option B: Using npm
    npm install
    ```
 
-3. Start the development server:
+3. **Start the development server**:
    ```bash
+   # Option A: Using Yarn
+   yarn dev
+
+   # Option B: Using npm
    npm run dev
    ```
 
-4. Open your browser to the URL shown in the terminal (typically `http://localhost:5173`)
+4. **Open in browser**:
+   - The server will show a URL (typically `http://localhost:5173`)
+   - Click the link or open in your browser
+   - Start modeling equity scenarios!
+
+## Troubleshooting
+
+Having issues with setup? Check [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for:
+- npm/Windows dependency issues
+- Port already in use errors
+- Node.js installation help
+- And much more!
 
 ## Development
 
-- **`npm run dev`** - Start development server with hot reload
-- **`npm run build`** - Build for production
-- **`npm run preview`** - Preview production build locally
+- **`npm run dev`** or **`yarn dev`** - Start development server with hot reload
+- **`npm run build`** or **`yarn build`** - Build for production
+- **`npm run preview`** or **`yarn preview`** - Preview production build locally
+
+**Note**: On Windows, Yarn is recommended for better dependency handling
 
 ## Tech Stack
 
